@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Antigravity</title>
+  <meta name="description" content="Type your word. Watch it float." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Google Sans Flex — exact font from antigravity.google -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wdth,wght@8..144,25..150,400..500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- Background dot canvas -->
+  <canvas id="canvas"></canvas>
+
+  <!-- Custom cursor -->
+  <div id="cursorDot"></div>
+  <div id="cursorRing"></div>
+
+  <!-- Theme toggle (top-right) -->
+  <button id="themeToggle" aria-label="Toggle light/dark mode">
+    <!-- Moon icon (dark mode) -->
+    <svg id="iconMoon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+      stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z" />
+    </svg>
+    <!-- Sun icon (light mode, hidden by default) -->
+    <svg id="iconSun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+      stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  </button>
+
+  <!-- Prompt screen -->
+  <div id="promptScreen" class="screen active">
+    <div class="prompt-inner">
+      <p class="label">TYPE YOUR WORD</p>
+      <div class="input-row">
+        <input id="wordInput" type="text" placeholder="antigravity" maxlength="24" autocomplete="off" spellcheck="false"
+          autofocus />
+        <button id="goBtn" type="button">
+          <span>Go</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
+      <p class="hint">press <kbd>Enter</kbd> to launch</p>
+    </div>
+  </div>
+
+  <!-- Display screen -->
+  <div id="displayScreen" class="screen">
+    <div id="wordDisplay"></div>
+    <button id="backBtn" type="button">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+      <span>Retype</span>
+    </button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    window.addEventListener('error', e => {
+      console.error('App error:', e.message, e.filename, e.lineno);
+    });
+  </script>
+  <script src="app.js"></script>
+</body>
+
+</html>
