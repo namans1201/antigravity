@@ -201,7 +201,7 @@ const ptMaterial = new THREE.ShaderMaterial({
     uColor2:        { value: LIGHT_PAL[1].clone() },
     uColor3:        { value: LIGHT_PAL[2].clone() },
     uPixelRatio:    { value: renderer.getPixelRatio() },
-    uParticleScale: { value: 3.5 },
+    uParticleScale: { value: 2.0 },
     uAlpha:         { value: 1.0 },
     uRingPos:       { value: new THREE.Vector2(-9999, -9999) },
     uTime:          { value: 0.0 },
@@ -281,8 +281,8 @@ const ptMaterial = new THREE.ShaderMaterial({
       float sdf     = sdRoundBox(uv, vec2(0.5, 0.2), 0.25);
       float rounded = smoothstep(0.1, 0.0, sdf);
 
-      float a = uAlpha * rounded * smoothstep(0.0, 0.08, vScale);
-      a *= mix(0.92, 0.70, uLightMode);
+      float a = uAlpha * rounded * smoothstep(0.0, 0.15, vScale);
+      a *= mix(0.95, 0.80, uLightMode);
 
       if (a < 0.01) discard;
       gl_FragColor = vec4(col, a);
@@ -300,7 +300,7 @@ function applyThemeToShader() {
   ptMaterial.uniforms.uColor2.value.copy(p[1]);
   ptMaterial.uniforms.uColor3.value.copy(p[2]);
   ptMaterial.uniforms.uLightMode.value  = isDark ? 0.0 : 1.0;
-  ptMaterial.uniforms.uParticleScale.value = isDark ? 5.0 : 3.5;
+  ptMaterial.uniforms.uParticleScale.value = isDark ? 3.0 : 2.0;
 }
 
 scene.add(new THREE.Points(geometry, ptMaterial));
@@ -312,9 +312,9 @@ scene.add(new THREE.Points(geometry, ptMaterial));
 //   finalPos = refPos + disp + pos * .25                     (world position)
 //   scale += (t - scale) * .2                                (scale spring)
 //   t includes world noise baseline -> all particles visible  (key difference!)
-const RING_R = 0.175;
-const RING_W  = 0.05;
-const RING_W2 = 0.015;
+const RING_R = 0.55;   // ring sits further out from cursor
+const RING_W  = 0.45;  // wide falloff — outer edge ~1.0 unit from cursor
+const RING_W2 = 0.10;  // inner bright shell
 const RING_D  = 0.3;
 
 function simulate(t) {
@@ -352,25 +352,35 @@ function simulate(t) {
     const tv2 = Math.max(0, ss(rr - RING_W2*2, rr, dist) - ss(rr, rr + RING_W2, dist));
     const tv3 = Math.max(0, ss(rr + RING_W2, rr, dist)); // 1 inside ring, 0 outside
 
-    // Ring scale contribution — kept subtle so cursor particles don't dwarf the field.
-    // Real site multipliers (t2*3, t3*0.4) make ring particles 5-7x ambient;
-    // we reduce them significantly for a more even field.
-    let tRing = Math.pow(tv, 2) * 0.4 + Math.pow(tv2, 3) * 0.8 + tv3 * 0.15;
+    // Ring scale — the ONLY source of scale; no ambient field.
+    // Particles are invisible (scale≈0) far from cursor and
+    // swell large as they enter the ring zone from all directions.
+    let tRing = Math.pow(tv, 2) * 1.2 + Math.pow(tv2, 3) * 4.0 + tv3 * 0.5;
 
-    // World noise baseline — gives every particle organic, non-zero size.
-    const nSbase = snoiseCPU(rx * 2 + 18.4924, ry * 2 + 72.9744, nt * 0.5);
-    const tBase  = Math.pow((nSbase + 1.5) * 0.5, 2) * 0.6;
+    // No ambient baseline — background stays completely empty.
+    const tBase  = 0.0;
 
-    // Cap total so ring particles blend with the ambient field
-    const tTotal = Math.min(tBase + tRing, 1.2);
+    const tTotal = Math.min(tBase + tRing, 1.4);
 
     // Damped accumulator (real site: pos *= 0.8)
     posDisp[i2]   *= 0.8;
     posDisp[i2+1] *= 0.8;
     if (isHovering) {
-      // pos -= (ringPos - curentPos) * pow(t2, .75) * RING_D
+      // Ring snap displacement (existing)
       posDisp[i2]   -= (rwx - rx) * Math.pow(tv2, 0.75) * RING_D;
       posDisp[i2+1] -= (rwy - ry) * Math.pow(tv2, 0.75) * RING_D;
+
+      // Gentle outward radial flow — all particles in the visible zone
+      // slowly drift away from the cursor each frame, creating a flowing look.
+      // ss() gives strongest push near cursor, fading to 0 at the outer edge.
+      const flowInfluence = ss(RING_R + RING_W, 0.0, dist);
+      if (flowInfluence > 0.0 && dist > 0.01) {
+        const outX = (ddx * aspect) / dist;
+        const outY =  ddy           / dist;
+        const flowStr = flowInfluence * 0.022;
+        posDisp[i2]   += outX * flowStr;
+        posDisp[i2+1] += outY * flowStr;
+      }
     }
 
     // Scale spring (real site: scaleDiff = t - scale; scaleDiff *= .2; scale += scaleDiff)
