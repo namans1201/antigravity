@@ -25,10 +25,10 @@ const COLORS = [
   "#1A73E8",
 ];
 
-const MOUSE_RADIUS = 180;
-const PUSH_FORCE = 12;
-const RETURN_SPEED = 0.03;
-const FRICTION = 0.85;
+const MOUSE_RADIUS = 280;
+const PUSH_FORCE = 18;
+const RETURN_SPEED = 0.018;
+const FRICTION = 0.88;
 
 const ConfettiParticles = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
