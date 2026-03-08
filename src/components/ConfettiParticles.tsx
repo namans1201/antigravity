@@ -59,11 +59,11 @@ const ConfettiParticles = () => {
       const shapes: Particle["shape"][] = ["circle", "rect", "line", "dot"];
       const particles: Particle[] = [];
 
-      // More particles near top (hero area), fewer below
-      for (let i = 0; i < 200; i++) {
+      // Dense field: ~500 particles scattered across the viewport
+      for (let i = 0; i < 500; i++) {
         const x = Math.random() * w;
-        // Concentrate 70% in top portion
-        const y = i < 140 ? Math.random() * h * 0.8 : Math.random() * h * 1.5;
+        // Concentrate 60% in top hero area, rest spread further
+        const y = i < 300 ? Math.random() * h * 0.85 : Math.random() * h * 2;
         particles.push({
           originX: x,
           originY: y,
@@ -71,10 +71,10 @@ const ConfettiParticles = () => {
           y,
           vx: 0,
           vy: 0,
-          size: Math.random() * 6 + 2,
+          size: Math.random() * 5 + 1.5,
           color: COLORS[Math.floor(Math.random() * COLORS.length)],
           rotation: Math.random() * Math.PI * 2,
-          rotationSpeed: (Math.random() - 0.5) * 0.01,
+          rotationSpeed: (Math.random() - 0.5) * 0.008,
           shape: shapes[Math.floor(Math.random() * shapes.length)],
         });
       }
