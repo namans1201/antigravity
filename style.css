@@ -1,407 +1,356 @@
-/* ============================================================
-   ANTIGRAVITY CLONE — style.css
-   Font: Google Sans Flex (exact from antigravity.google)
-   Colors extracted from the site's own stylesheet
-   ============================================================ */
+/* Rework of https://antigravity.google/ using modern CSS */
+/* See https://brm.us/antigravity for details */
+@layer reset, tokens, base, components, layout, moderncss, util;
 
-/* ── Variables (Light Theme = Default like real site) ── */
-:root {
-  /* Real site uses pure white or #F8F9FC for background */
-  --bg: #F8F9FC;
-  /* Dark text */
-  --text: #121317;
-  --text-dim: #45474D;
-  --text-mute: #B2BBC5;
-  --accent: #3279F9;
+@layer tokens {
+  :root {
+    --palette-grey-0: #ffffff;
+    --palette-grey-10: #f8f9fc;
+    --palette-grey-50: #e6eaf0;
+    --palette-grey-300: #b2bbc5;
+    --palette-grey-800: #45474d;
+    --palette-grey-900: #2f3034;
+    --palette-grey-1200: #121317;
 
-  --ease-expo: cubic-bezier(.19, 1, .22, 1);
-  --ease-quint: cubic-bezier(.23, 1, .32, 1);
-  --ease-cubic: cubic-bezier(.215, .61, .355, 1);
-}
+    --theme-surface: var(--palette-grey-0);
+    --theme-on-surface: var(--palette-grey-1200);
+    --theme-on-surface-variant: var(--palette-grey-800);
+    --theme-outline: rgba(33, 34, 38, 0.12);
+    --theme-outline-variant: rgba(33, 34, 38, 0.06);
 
-/* ── Dark Theme ── */
-[data-theme="dark"] {
-  /* Real site dark theme background */
-  --bg: #121317;
-  --text: #FFFFFF;
-  --text-dim: #B2BBC5;
-  --text-mute: #45474D;
-}
-
-/* ── Reset ── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html,
-body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Google Sans Flex', 'Google Sans', ui-sans-serif, system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  transition: background 0.5s var(--ease-cubic), color 0.5s var(--ease-cubic);
-  cursor: default;
-}
-
-/* Canvas for Three.js / Particles */
-#canvas {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ── Custom Cursor (Matches antigravity-cursor.png behavior) ── */
-/* Dot is the actual pointer */
-#cursorDot {
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  background: var(--text);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: width 0.2s, height 0.2s, background-color 0.2s;
-}
-
-/* Ring follows with lag */
-#cursorRing {
-  position: fixed;
-  width: 40px;
-  height: 40px;
-  border: 1.5px solid rgba(128, 128, 128, 0.4);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9998;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s var(--ease-quint), height 0.3s var(--ease-quint), border-color 0.3s;
-}
-
-/* Hover state for cursor */
-.hovering #cursorDot {
-  width: 10px;
-  height: 10px;
-  background: var(--accent);
-}
-
-.hovering #cursorRing {
-  width: 50px;
-  height: 50px;
-  border-color: var(--accent);
-  border-width: 2px;
-  opacity: 0.8;
-}
-
-/* ── Theme Toggle ── */
-#themeToggle {
-  position: fixed;
-  top: 28px;
-  right: 32px;
-  z-index: 500;
-  background: rgba(183, 191, 217, 0.09);
-  border: 1px solid rgba(33, 34, 38, 0.12);
-  border-radius: 99em;
-  padding: 10px 14px;
-  color: var(--text-dim);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  /* Match antigravity nav button transition */
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-/* Exact nav button hover from antigravity.google: rgba(170,177,204,0.20) */
-#themeToggle:hover {
-  background: rgba(170, 177, 204, 0.20);
-  border-color: rgba(33, 34, 38, 0.2);
-  color: var(--text);
-}
-
-[data-theme="dark"] #themeToggle {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] #themeToggle:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-/* Show moon in light mode (default), sun in dark mode */
-#iconSun {
-  display: none;
-}
-
-[data-theme="dark"] #iconMoon {
-  display: none;
-}
-
-[data-theme="dark"] #iconSun {
-  display: block;
-}
-
-/* ── Screens ── */
-.screen {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.55s var(--ease-cubic);
-  z-index: 10;
-}
-
-.screen.active {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.screen.exit {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ── Prompt Screen ── */
-.prompt-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 28px;
-  width: 100%;
-  max-width: 980px;
-  padding: 0 32px;
-  animation: riseUp 0.7s var(--ease-expo) both;
-}
-
-@keyframes riseUp {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
+    --page-max: 1300px;
+    --page-pad: clamp(16px, 3vw, 48px);
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  [data-theme="dark"] {
+    --theme-surface: var(--palette-grey-1200);
+    --theme-on-surface: var(--palette-grey-0);
+    --theme-on-surface-variant: var(--palette-grey-300);
+    --theme-outline: rgba(230, 234, 240, 0.16);
+    --theme-outline-variant: rgba(230, 234, 240, 0.08);
   }
 }
 
-.label {
-  font-size: 11px;
-  letter-spacing: 3px;
-  color: var(--text-mute);
-  text-transform: uppercase;
-  font-weight: 500;
-}
-
-/* Input row: input + Go button side by side */
-.input-row {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  /* Exact outline color from real site: rgba(33,34,38,0.12) */
-  border-bottom: 1.5px solid rgba(33, 34, 38, 0.12);
-  padding-bottom: 8px;
-  transition: border-color 0.2s ease;
-  gap: 16px;
-}
-
-.input-row:focus-within {
-  /* Exact focus border from real site — palette-grey-300 */
-  border-color: #B2BBC5;
-}
-
-#wordInput {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  font-family: inherit;
-  font-size: clamp(36px, 8vw, 107px);
-  font-weight: 450;
-  font-variation-settings: "wdth" 100, "opsz" 144;
-  letter-spacing: -2.14px;
-  color: var(--text);
-  caret-color: var(--accent);
-  min-width: 0;
-}
-
-#wordInput::placeholder {
-  color: var(--text-mute);
-}
-
-/* Go button — always visible, dims when empty */
-#goBtn {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 28px;
-  /* Primary filled button: #121317 exactly like antigravity.google */
-  background: #121317;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 99em;
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  opacity: 0.18;
-  /* Real site only transitions background-color, no transform */
-  transition: opacity 0.25s, background-color 0.2s ease;
-  white-space: nowrap;
-}
-
-#goBtn.ready {
-  opacity: 1;
-}
-
-/* Exact hover from antigravity.google: palette-grey-900 = #2F3034 */
-#goBtn.ready:hover {
-  background: #2F3034;
-}
-
-/* Pressed state: slightly lighter overlay */
-#goBtn.ready:active {
-  background: #45474D;
-}
-
-.hint {
-  font-size: 12px;
-  color: var(--text-mute);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-kbd {
-  background: rgba(128, 128, 128, 0.12);
-  border: 1px solid rgba(128, 128, 128, 0.2);
-  border-radius: 4px;
-  padding: 1px 6px;
-  font-family: inherit;
-  font-size: 11px;
-}
-
-/* ── Display Screen ── */
-#wordDisplay {
-  font-family: inherit;
-  font-size: clamp(56px, 15vw, 220px);
-  font-weight: 450;
-  font-variation-settings: "wdth" 100, "opsz" 144;
-  letter-spacing: -4px;
-  white-space: nowrap;
-  user-select: none;
-  animation: bigReveal 1s var(--ease-expo) both;
-}
-
-@keyframes bigReveal {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  html, body {
+    margin: 0;
+    min-height: 100%;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
   }
 }
 
-/* Back button */
-#backBtn {
-  position: fixed;
-  bottom: 36px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 22px;
-  background: transparent;
-  border: 1px solid rgba(33, 34, 38, 0.12);
-  border-radius: 99em;
-  color: var(--text-dim);
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 450;
-  cursor: pointer;
-  opacity: 0;
-  /* No transform change on hover — match real site */
-  transition: opacity 0.4s 0.9s, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-#displayScreen.active #backBtn {
-  opacity: 1;
-}
-
-/* Exact hover from antigravity.google: generic button hover = rgba(33,34,38,0.04) */
-#backBtn:hover {
-  background: rgba(33, 34, 38, 0.04);
-  border-color: rgba(33, 34, 38, 0.3);
-  color: var(--text);
-  transform: translateX(-50%);
-}
-
-[data-theme="dark"] #backBtn:hover {
-  background: rgba(230, 234, 240, 0.06);
-  border-color: rgba(230, 234, 240, 0.25);
-}
-
-/* Dark mode overrides */
-/* In dark mode: invite button becomes white, hover to off-white */
-[data-theme="dark"] #goBtn {
-  background: #FFFFFF;
-  color: #121317;
-}
-
-[data-theme="dark"] #goBtn.ready:hover {
-  background: #E8EAED;
-}
-
-[data-theme="dark"] #goBtn.ready:active {
-  background: #D2D5DB;
-}
-
-/* Dark mode input row border */
-[data-theme="dark"] .input-row {
-  border-bottom-color: rgba(230, 234, 240, 0.12);
-}
-
-[data-theme="dark"] .input-row:focus-within {
-  border-bottom-color: rgba(230, 234, 240, 0.35);
-}
-
-/* Dark mode back button base border */
-[data-theme="dark"] #backBtn {
-  border-color: rgba(230, 234, 240, 0.12);
-}
-
-/* ── Responsive ── */
-@media (max-width: 640px) {
-  .input-row {
-    flex-direction: column;
-    align-items: stretch;
-    border-bottom: none;
+@layer base {
+  html {
+    background: var(--theme-surface);
+    color: var(--theme-on-surface);
+    font-family: "Google Sans Flex", "Google Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
-  #wordInput {
-    border-bottom: 1.5px solid rgba(128, 128, 128, 0.2);
-    padding-bottom: 8px;
-    font-size: 10vw;
+  body {
+    background: var(--theme-surface);
+    color: var(--theme-on-surface);
+    line-height: 1.35;
   }
 
-  #goBtn {
-    align-self: center;
+  h1, h2 {
+    margin: 0;
+    font-weight: 450;
+  }
+
+  p {
+    margin: 0;
+    color: var(--theme-on-surface-variant);
+    font-size: clamp(16px, 2vw, 20px);
+  }
+
+  button {
+    font: inherit;
+  }
+}
+
+@layer components {
+  button,
+  .site-nav a {
+    border-radius: 999px;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  button {
+    border: 1px solid transparent;
+    padding: 0.65rem 1.3rem;
+    cursor: pointer;
+    background: var(--theme-on-surface);
+    color: var(--theme-surface);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  button:hover,
+  button:focus-visible {
+    background: var(--palette-grey-900);
+  }
+
+  .secondary {
+    background: rgba(183, 191, 217, 0.12);
+    color: var(--theme-on-surface);
+    border-color: var(--theme-outline);
+  }
+
+  .secondary:hover,
+  .secondary:focus-visible {
+    background: rgba(170, 177, 204, 0.22);
+  }
+
+  .theme-toggle {
+    background: transparent;
+    color: var(--theme-on-surface);
+    border-color: var(--theme-outline);
+  }
+
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible {
+    background: rgba(170, 177, 204, 0.2);
+  }
+
+  .site-nav a {
+    text-decoration: none;
+    color: var(--theme-on-surface-variant);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0.55rem 1rem;
+  }
+
+  .site-nav a:hover,
+  .site-nav a:focus-visible {
+    color: var(--theme-on-surface);
+    background: rgba(183, 191, 217, 0.16);
+  }
+}
+
+@layer layout {
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: space-between;
+    padding: 0.75rem var(--page-pad);
+    background: color-mix(in oklab, var(--theme-surface) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--theme-outline-variant);
+  }
+
+  .brand {
+    text-decoration: none;
+    color: var(--theme-on-surface);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  .site-nav {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+  }
+
+  main {
+    padding-top: 64px;
+  }
+
+  .center,
+  .content-section {
+    width: min(var(--page-max), calc(100% - var(--page-pad) * 2));
+    margin-inline: auto;
+  }
+
+  .center {
+    min-height: calc(100dvh - 64px);
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 1.2rem;
+    text-align: center;
+    border-bottom: 1px solid var(--theme-outline-variant);
+    position: relative;
+    isolation: isolate;
+  }
+
+  .center h1 {
+    font-size: clamp(42px, 9vw, 108px);
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+  }
+
+  .hero-sub {
+    font-size: clamp(18px, 2.1vw, 26px);
+    max-width: 30ch;
+  }
+
+  .cta-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .content-section {
+    min-height: 54dvh;
+    display: grid;
+    align-content: center;
+    gap: 1rem;
+    padding-block: clamp(48px, 8vw, 120px);
+    border-bottom: 1px solid var(--theme-outline-variant);
+  }
+
+  .content-section h2 {
+    font-size: clamp(30px, 5vw, 64px);
+    letter-spacing: -0.02em;
+  }
+
+  .content-section.dark {
+    border-radius: 28px;
+    margin-block: clamp(16px, 3vw, 36px);
+    padding-inline: clamp(18px, 4vw, 40px);
+    background: var(--theme-on-surface);
+  }
+
+  .content-section.dark h2,
+  .content-section.dark p {
+    color: var(--theme-surface);
+  }
+}
+
+@layer moderncss {
+  @layer misc {
+    :root {
+      overscroll-behavior-y: contain;
+    }
+  }
+
+  @layer layout {
+    @layer ring-particles {
+      @supports (background: paint(something)) {
+        @layer particles {
+          #welcome {
+            --ring-radius: 100;
+            --ring-thickness: 600;
+            --particle-count: 80;
+            --particle-rows: 25;
+            --particle-size: 2;
+            --particle-color: navy;
+            --particle-min-alpha: 0.1;
+            --particle-max-alpha: 1;
+            --seed: 200;
+            background-image: paint(ring-particles);
+            background-repeat: no-repeat;
+            background-size: cover;
+          }
+
+          [data-theme="dark"] #welcome {
+            --particle-color: #b7bfd9;
+          }
+        }
+
+        @layer animation {
+          @property --animation-tick {
+            syntax: '<number>';
+            inherits: false;
+            initial-value: 0;
+          }
+
+          @property --ring-radius {
+            syntax: '<number> | auto';
+            inherits: false;
+            initial-value: auto;
+          }
+
+          @keyframes ripple {
+            0% { --animation-tick: 0; }
+            100% { --animation-tick: 1; }
+          }
+
+          @keyframes ring {
+            0% { --ring-radius: 150; }
+            100% { --ring-radius: 250; }
+          }
+
+          #welcome {
+            animation: ripple 6s linear infinite, ring 6s ease-in-out infinite alternate;
+          }
+        }
+
+        @layer follow-mouse {
+          @property --ring-x {
+            syntax: '<number>';
+            inherits: false;
+            initial-value: 50;
+          }
+
+          @property --ring-y {
+            syntax: '<number>';
+            inherits: false;
+            initial-value: 50;
+          }
+
+          @property --ring-interactive {
+            syntax: '<number>';
+            inherits: false;
+            initial-value: 0;
+          }
+
+          #welcome {
+            transition: --ring-x 3s ease, --ring-y 3s ease;
+          }
+
+          #welcome.interactive {
+            transition-duration: 0.45s;
+          }
+        }
+      }
+    }
+  }
+}
+
+@layer util {
+  @media (width < 930px) {
+    .site-nav {
+      display: none;
+    }
+
+    .site-header {
+      gap: 0.75rem;
+    }
+  }
+
+  @media (width < 680px) {
+    .center {
+      min-height: calc(86dvh - 64px);
+      padding-top: 2rem;
+    }
+
+    .cta-row {
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .cta-row button {
+      width: 100%;
+    }
   }
 }
