@@ -58,48 +58,6 @@ body {
   z-index: 0;
 }
 
-/* ── Custom Cursor (Matches antigravity-cursor.png behavior) ── */
-/* Dot is the actual pointer */
-#cursorDot {
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  background: var(--text);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: width 0.2s, height 0.2s, background-color 0.2s;
-}
-
-/* Ring follows with lag */
-#cursorRing {
-  position: fixed;
-  width: 40px;
-  height: 40px;
-  border: 1.5px solid rgba(128, 128, 128, 0.4);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9998;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s var(--ease-quint), height 0.3s var(--ease-quint), border-color 0.3s;
-}
-
-/* Hover state for cursor */
-.hovering #cursorDot {
-  width: 10px;
-  height: 10px;
-  background: var(--accent);
-}
-
-.hovering #cursorRing {
-  width: 50px;
-  height: 50px;
-  border-color: var(--accent);
-  border-width: 2px;
-  opacity: 0.8;
-}
-
 /* ── Theme Toggle ── */
 #themeToggle {
   position: fixed;
