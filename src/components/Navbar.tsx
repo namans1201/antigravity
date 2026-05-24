@@ -5,7 +5,6 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-3 bg-background/80 backdrop-blur-sm">
       <div className="flex items-center gap-8">
         <div className="flex items-center gap-2">
-          
 
 
           

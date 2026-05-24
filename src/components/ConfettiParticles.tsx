@@ -35,7 +35,6 @@ const ConfettiParticles = () => {
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: -9999, y: -9999 });
   const animFrameRef = useRef<number>(0);
-  const scrollRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -85,19 +84,13 @@ const ConfettiParticles = () => {
     window.addEventListener("resize", resize);
 
     const onMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY + window.scrollY };
-    };
-    const onScroll = () => {
-      scrollRef.current = window.scrollY;
-      // Update mouse Y to account for scroll
-      mouseRef.current.y = mouseRef.current.y - scrollRef.current + window.scrollY;
+      mouseRef.current = { x: e.clientX, y: e.clientY };
     };
     const onMouseLeave = () => {
       mouseRef.current = { x: -9999, y: -9999 };
     };
 
     window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("scroll", onScroll);
     window.addEventListener("mouseleave", onMouseLeave);
 
     const animate = () => {
@@ -106,7 +99,7 @@ const ConfettiParticles = () => {
       ctx.clearRect(0, 0, w, h);
 
       const mx = mouseRef.current.x;
-      const my = mouseRef.current.y;
+      const my = mouseRef.current.y + window.scrollY;
 
       for (const p of particlesRef.current) {
         // Mouse repulsion
@@ -172,7 +165,6 @@ const ConfettiParticles = () => {
       cancelAnimationFrame(animFrameRef.current);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("mouseleave", onMouseLeave);
     };
   }, []);
