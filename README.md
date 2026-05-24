@@ -1,73 +1,84 @@
-# Welcome to your Lovable project
+# Gravity Recreated Effect
 
-## Project info
+A recreation of the Antigravity landing page hero, featuring an interactive confetti particle field that reacts to the cursor. Move the mouse and the particles are pushed away with a soft gravity-like return; the rest of the page sits on top as a static hero section.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## What's inside
 
-## How can I edit this code?
+- **`ConfettiParticles`** — a canvas-based field of ~500 colored shapes (circles, rectangles, lines, dots) that respond to mouse movement with a configurable push force, friction, and return-to-origin spring.
+- **`Navbar`** — minimal top navigation styled to match the Antigravity look.
+- **`Index` page** — hero section layered above the particle canvas with a headline and call-to-action buttons.
 
-There are several ways of editing your application.
+## Tech stack
 
-**Use Lovable**
+- Vite + React 18 + TypeScript
+- Tailwind CSS
+- A small set of shadcn/ui components (toaster, sonner, tooltip)
+- React Router
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js 18+ and npm
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Getting started
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Clone the repository
 git clone <YOUR_GIT_URL>
+cd gravity-recreated-effect
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the dev server (http://localhost:8080)
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Available scripts
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+| Command             | Description                          |
+| ------------------- | ------------------------------------ |
+| `npm run dev`       | Start the Vite dev server            |
+| `npm run build`     | Production build into `dist/`        |
+| `npm run build:dev` | Development-mode build               |
+| `npm run preview`   | Preview the production build locally |
+| `npm run lint`      | Run ESLint                           |
 
-**Use GitHub Codespaces**
+## Project structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+src/
+├── components/
+│   ├── ConfettiParticles.tsx   # Interactive canvas particle field
+│   ├── Navbar.tsx              # Top navigation
+│   └── ui/                     # shadcn/ui primitives (toaster, sonner, tooltip)
+├── hooks/
+│   └── use-toast.ts
+├── lib/
+│   └── utils.ts                # cn() className helper
+├── pages/
+│   ├── Index.tsx               # Landing page
+│   └── NotFound.tsx            # 404 route
+├── App.tsx
+├── main.tsx
+└── index.css
+```
 
-## What technologies are used for this project?
+## Tweaking the effect
 
-This project is built with:
+The particle behavior is controlled by a few constants at the top of `src/components/ConfettiParticles.tsx`:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- `COLORS` — palette used for the particles
+- `MOUSE_RADIUS` — how close the cursor must be to push a particle
+- `PUSH_FORCE` — strength of the push away from the cursor
+- `RETURN_SPEED` — spring force pulling each particle back to its origin
+- `FRICTION` — velocity damping per frame
+- The particle count (currently `500`) inside `initParticles`
 
-## How can I deploy this project?
+## Building for production
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+```sh
+npm run build
+npm run preview
+```
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+The build output is written to `dist/` and can be deployed to any static host (Vercel, Netlify, GitHub Pages, S3, etc.).

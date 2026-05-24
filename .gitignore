@@ -1,3 +1,17 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build output
+dist
+dist-ssr
+build
+*.local
+
+# Vite cache
+.vite
+
 # Logs
 logs
 *.log
@@ -7,18 +21,36 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Lockfiles for other package managers (this project uses npm)
+bun.lock
+bun.lockb
+yarn.lock
+pnpm-lock.yaml
 
-# Editor directories and files
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor / IDE
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage / test output
+coverage
+.nyc_output
