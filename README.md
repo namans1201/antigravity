@@ -1,84 +1,71 @@
-# Gravity Recreated Effect
+# antigravity - branch `lovable-ripple-polychromatic-particles`
 
-A recreation of the Antigravity landing page hero, featuring an interactive confetti particle field that reacts to the cursor. Move the mouse and the particles are pushed away with a soft gravity-like return; the rest of the page sits on top as a static hero section.
+A complete rewrite of the antigravity effect as a modern React application. This
+is the largest divergence in the repository: the other four branches are vanilla
+HTML, CSS and JavaScript, and this one is a full Vite build.
 
-## What's inside
+For the full map of all five branches, see the README on the default branch,
+`unoptimized-hover-based-polychromatic-particles`.
 
-- **`ConfettiParticles`** — a canvas-based field of ~500 colored shapes (circles, rectangles, lines, dots) that respond to mouse movement with a configurable push force, friction, and return-to-origin spring.
-- **`Navbar`** — minimal top navigation styled to match the Antigravity look.
-- **`Index` page** — hero section layered above the particle canvas with a headline and call-to-action buttons.
+## What this branch changes
 
-## Tech stack
+- 16 commits ahead, 2 commits behind the default branch
+- 40 files changed, 5677 insertions, 7460 deletions
+- 30 tracked files, against 12 on the default branch
 
-- Vite + React 18 + TypeScript
+The entire vanilla implementation is replaced. `style.css` and the multi-entry
+HTML pages are deleted, and the effect is reimplemented as a React component.
+
+## Stack
+
+- Vite
+- React with TypeScript
 - Tailwind CSS
-- A small set of shadcn/ui components (toaster, sonner, tooltip)
-- React Router
+- shadcn/ui primitives, plus Sonner for toasts
+- Scaffolded from a Lovable template
 
-## Prerequisites
-
-- Node.js 18+ and npm
-
-## Getting started
-
-```sh
-# Clone the repository
-git clone <YOUR_GIT_URL>
-cd gravity-recreated-effect
-
-# Install dependencies
-npm install
-
-# Start the dev server (http://localhost:8080)
-npm run dev
-```
-
-## Available scripts
-
-| Command             | Description                          |
-| ------------------- | ------------------------------------ |
-| `npm run dev`       | Start the Vite dev server            |
-| `npm run build`     | Production build into `dist/`        |
-| `npm run build:dev` | Development-mode build               |
-| `npm run preview`   | Preview the production build locally |
-| `npm run lint`      | Run ESLint                           |
-
-## Project structure
+## Where the effect lives
 
 ```
 src/
-├── components/
-│   ├── ConfettiParticles.tsx   # Interactive canvas particle field
-│   ├── Navbar.tsx              # Top navigation
-│   └── ui/                     # shadcn/ui primitives (toaster, sonner, tooltip)
-├── hooks/
-│   └── use-toast.ts
-├── lib/
-│   └── utils.ts                # cn() className helper
-├── pages/
-│   ├── Index.tsx               # Landing page
-│   └── NotFound.tsx            # 404 route
-├── App.tsx
-├── main.tsx
-└── index.css
+  components/
+    ConfettiParticles.tsx     the particle effect itself
+    Navbar.tsx
+    ui/                       sonner, toast, toaster, tooltip
+  pages/
+    Index.tsx                 hosts the effect
+    NotFound.tsx
+  hooks/use-toast.ts
+  index.css                   Tailwind layers and theme
+  main.tsx
+tailwind.config.ts
+vite.config.ts
 ```
 
-## Tweaking the effect
+## Development history on this branch
 
-The particle behavior is controlled by a few constants at the top of `src/components/ConfettiParticles.tsx`:
+The 16 commits trace the effect being rebuilt from scratch rather than ported:
+"Investigated hover effect", "Build confetti hover effect", "Add confetti mouse
+effect", "Add confetti hover effect", "Replicated hover effect", "Replicated
+antigravity hover", then two density passes, "Increase particle density and
+radius", and finally "Clean up UI components and update configurations".
 
-- `COLORS` — palette used for the particles
-- `MOUSE_RADIUS` — how close the cursor must be to push a particle
-- `PUSH_FORCE` — strength of the push away from the cursor
-- `RETURN_SPEED` — spring force pulling each particle back to its origin
-- `FRICTION` — velocity damping per frame
-- The particle count (currently `500`) inside `initParticles`
+## Run
 
-## Building for production
+Unlike the other branches, this one does not work with a plain static file
+server.
 
-```sh
-npm run build
-npm run preview
+```bash
+npm install
+npm run dev
 ```
 
-The build output is written to `dist/` and can be deployed to any static host (Vercel, Netlify, GitHub Pages, S3, etc.).
+## Status
+
+**This is not the latest branch.** Its tip is 2026-05-24 13:29, about two hours
+before `claude-optimized-version` at 15:14.
+
+It is 2 commits behind the default branch, so it does not contain everything
+there. Given that it shares almost no files with the other branches, merging it
+is not meaningful; treat it as a parallel React port rather than a step in a
+sequence.
